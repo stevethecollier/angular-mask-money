@@ -9,6 +9,6 @@ A simple angular directive wrapper for jquery.maskMoney.js (https://github.com/p
 currently, the viewValue is not unmasked, what you see is what you get
 
 
-unmasking the viewValue is on the map
+unmasking the viewValue is on the roadmap
 
 
