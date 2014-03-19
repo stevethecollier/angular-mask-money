@@ -1,12 +1,18 @@
 angular.module('angularMaskMoneyDemo', ['maskMoney']).run(['$rootScope',
-	function($scope){
+    function($scope) {
 
-	console.log('app is running')
+        console.log('app is running')
 
-	$scope.options = {
-		prefix: '$'
-	}
+        $scope.options = {
+            prefix: '$'
+        }
 
-	$scope.anotherModel = 'someString'
 
-}])
+        $scope.options2 = {
+            prefix: 'erik'
+        }
+
+        $scope.anotherModel = 'someString'
+
+    }
+])
