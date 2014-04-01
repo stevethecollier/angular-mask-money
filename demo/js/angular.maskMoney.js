@@ -1,10 +1,10 @@
 angular.module('maskMoney', [])
-    .directive('maskMoney', function() {
+    .directive('maskMoney', function($timeout) {
         return {
             restrict: 'A',
             require: 'ngModel',
             scope: {
-                ngModel: '=',
+                model: '=ngModel',
                 mmOptions: '=?',
                 prefix: '=',
                 suffix: '=',
@@ -15,58 +15,73 @@ angular.module('maskMoney', [])
                 allowZero: '=',
                 allowNegative: '='
             },
-            compile: function() {
-                return function(scope, el, attr, ctrl) {
+            link: function(scope, el, attr, ctrl) {
 
-                    scope.$watch('mmOptions', init, true);
-                    el.on('keyup', eventHandler); //change to $watch or $observe
+                scope.$watch(checkOptions, init, true);
+
+                scope.$watch(attr.ngModel, eventHandler, true);
+                //el.on('keyup', eventHandler); //change to $watch or $observe
+
+                function checkOptions() {
+                    console.log('CHECKING OPTIONS');
+                    return scope.mmOptions;
+                }
+
+                function checkModel() {
+                    console.log('CHECKING MODEL');
+                    return scope.model;
+                }
 
 
-                    //this parser will unformat the string for the model behid the scenes
-                    function parser(fromViewValue) {
-                        return $(el).maskMoney('unmasked')[0]
-                    }
-                    ctrl.$parsers.push(parser)
 
-                    function eventHandler() {
+                //this parser will unformat the string for the model behid the scenes
+                function parser() {
+                    return $(el).maskMoney('unmasked')[0]
+                }
+                ctrl.$parsers.push(parser)
 
-                        if (!scope.$$phase) {
-                            scope.$apply(function() {
-                                ctrl.$setViewValue($(el).val());
-                            });
+                function eventHandler() {
+                    $timeout(function() {
+                        scope.$apply(function() {
+                            ctrl.$setViewValue($(el).val());
+                        });
+                    })
+                }
+
+                function init(options) {
+                    $timeout(function() {
+                        elOptions = {
+                            prefix: scope.prefix || '',
+                            suffix: scope.suffix,
+                            affixesStay: scope.affixesStay,
+                            thousands: scope.thousands,
+                            decimal: scope.decimal,
+                            precision: scope.precision,
+                            allowZero: scope.allowZero,
+                            allowNegative: scope.allowNegative
                         }
-                    }
 
-                    function init(options) {
-                        setTimeout(function() {
-                            elOptions = {
-                                prefix: scope.prefix || '',
-                                suffix: scope.suffix,
-                                affixesStay: scope.affixesStay,
-                                thousands: scope.thousands,
-                                decimal: scope.decimal,
-                                precision: scope.precision,
-                                allowZero: scope.allowZero,
-                                allowNegative: scope.allowNegative
+                        if (!scope.mmOptions) {
+                            scope.mmOptions = {};
+                        }
+
+                        for (elOption in elOptions) {
+                            if (elOptions[elOption]) {
+                                scope.mmOptions[elOption] = elOptions[elOption];
                             }
+                        }
 
-                            if (!scope.mmOptions) {
-                                scope.mmOptions = {};
-                            }
+                        $(el).maskMoney(scope.mmOptions);
+                        $(el).maskMoney('mask');
+                        eventHandler()
 
-                            for (elOption in elOptions) {
-                                if (elOptions[elOption]) {
-                                    scope.mmOptions[elOption] = elOptions[elOption];
-                                }
-                            }
+                    }, 0);
 
-                            console.dir(scope.mmOptions)
-                            $(el).maskMoney(scope.mmOptions);
-                            $(el).maskMoney('mask');
-                            eventHandler()
-
-                        }, 0);
-                    }
+                    $timeout(function() {
+                        scope.$apply(function() {
+                            ctrl.$setViewValue($(el).val());
+                        });
+                    })
 
                 }
             }
