@@ -1,5 +1,5 @@
 angular.module('maskMoney', [])
-    .directive('maskMoney', function($timeout) {
+    .directive('maskMoney', function($timeout, $locale) {
         return {
             restrict: 'A',
             require: 'ngModel',
@@ -23,12 +23,10 @@ angular.module('maskMoney', [])
                 //el.on('keyup', eventHandler); //change to $watch or $observe
 
                 function checkOptions() {
-                    console.log('CHECKING OPTIONS');
                     return scope.mmOptions;
                 }
 
                 function checkModel() {
-                    console.log('CHECKING MODEL');
                     return scope.model;
                 }
 
@@ -54,8 +52,8 @@ angular.module('maskMoney', [])
                             prefix: scope.prefix || '',
                             suffix: scope.suffix,
                             affixesStay: scope.affixesStay,
-                            thousands: scope.thousands,
-                            decimal: scope.decimal,
+                            thousands: scope.thousands || $locale.NUMBER_FORMATS.GROUP_SEP,
+                            decimal: scope.decimal || $locale.NUMBER_FORMATS.DECIMAL_SEP,
                             precision: scope.precision,
                             allowZero: scope.allowZero,
                             allowNegative: scope.allowNegative
