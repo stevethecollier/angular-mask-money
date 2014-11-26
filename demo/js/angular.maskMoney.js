@@ -36,7 +36,14 @@ angular.module('maskMoney', [])
                 function parser() {
                     return $(el).maskMoney('unmasked')[0]
                 }
-                ctrl.$parsers.push(parser)
+                ctrl.$parsers.push(parser);
+                
+                ctrl.$formatters.push(function(value){
+                  $timeout(function(){
+                    init();
+                  });
+                  return parseFloat(value).toFixed(2);
+                });
 
                 function eventHandler() {
                     $timeout(function() {
